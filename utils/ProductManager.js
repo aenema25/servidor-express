@@ -19,23 +19,39 @@ class ProductManager {
     getProducts() {
         return this.products
     }
-    addProducts(title, description, price, thumbnail, code, stock) {
-        if (this.products.some((product) => product.code === code)) {
-            return "El codigo ingresado ya existe"
-        } else if (title === undefined || description === undefined || price === undefined || thumbnail === undefined || code === undefined || stock === undefined) {
-            return "Uno o mas campos estan vacios"
+    addProducts(data) {
+        if (this.products.some((product) => product.code === data.code)) {
+            return {
+                error: true,
+                mensaje: "El codigo ingresado ya existe"
+            }
+        } else if (typeof data.title !== 'string' ||
+            typeof data.description !== 'string' ||
+            typeof data.price !== 'number' ||
+            typeof data.code !== 'string' ||
+            typeof data.stock !== 'number' ||
+            typeof data.status !== 'boolean') {
+            return {
+                error: true,
+                mensaje: "Uno o mas campos estan vacios o incorrectos, verifica e intenta nuevamente"
+            }
         } else {
             this.products.push({
                 id: `PC-${this.products.length + 1 < 9 ? `0${this.products.length + 1}` : this.products.length + 1}`,
-                title: title,
-                description: description,
-                price: price,
-                thumbnail: thumbnail,
-                code: code,
-                stock: stock
+                title: data.title,
+                description: data.description,
+                price: data.price,
+                code: data.code,
+                stock: data.stock,
+                status: data.status ? data.status : true,
+                category: data.category,
+                thumbnails: data.thumbnails.length > 0 ? data.thumbnails : []
             })
             writeToFile(this.path, JSON.stringify(this.products))
-            return "Producto Agregado exitosamente"
+            return {
+                error: false,
+                mensaje: "Producto Agregado exitosamente"
+            }
         }
     }
     getProductById(id) {
@@ -53,14 +69,22 @@ class ProductManager {
             product.title = updatedData.title ?? product.title
             product.description = updatedData.description ?? product.description
             product.price = updatedData.price ?? product.price
-            product.thumbnail = updatedData.thumbnail ?? product.thumbnail
+            product.thumbnails = updatedData.thumbnail ?? product.thumbnail
             product.code = updatedData.code ?? product.code
             product.stock = updatedData.stock ?? product.stock
+            product.category = updatedData.category ?? product.category
+            product.status = updatedData.status ?? product.status
             // Guardar cambios en el archivo
             writeToFile(this.path, JSON.stringify(this.products))
-            return "Producto actualizado con exito", product
+            return {
+                error: false,
+                mensaje: "Producto actualizado con exito"
+            }
         } else {
-            return "El codigo de producto es invalido o no existe"
+            return {
+                error: true,
+                mensaje: "El codigo de producto es invalido o no existe"
+            }
         }
     }
     deleteProductById(id) {
@@ -68,13 +92,19 @@ class ProductManager {
         if (product !== undefined) {
             this.products = this.products.filter((product) => product.id !== id)
             writeToFile(this.path, JSON.stringify(this.products))
-            return "Producto eliminado con exito", this.products
+            return {
+                error: false,
+                mensaje: "Producto eliminado con exito"
+            }
         } else {
-            return "El codigo de producto es invalido o no existe"
+            return {
+                error: true,
+                mensaje: "El codigo de producto es invalido o no existe"
+            }
         }
     }
 }
 
-const ProductsClass = new ProductManager("./data.json")
+const ProductsClass = new ProductManager("./utils/data.json")
 
 module.exports = ProductsClass
