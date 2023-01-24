@@ -1,0 +1,81 @@
+<h1>Conexion a socket</h1>
+<form name="create-product" id="create-product" action="" method="POST"
+    style="display: flex; flex-direction: column; gap: 20px; max-width: 300px">
+    <div style="display: flex; justify-content: space-between">Nombre: <input name='title' /></div>
+    <div style="display: flex; justify-content: space-between">Descripcion: <input name='description' /></div>
+    <div style="display: flex; justify-content: space-between">Precio: <input name='price' /></div>
+    <div style="display: flex; justify-content: space-between">Codigo: <input name='code' /></div>
+    <div style="display: flex; justify-content: space-between">Stock: <input name='stock' /></div>
+    <div style="display: flex; justify-content: space-between">Categoria: <input name='category' /></div>
+    <button type="submit">Crear nuevo producto</button>
+</form>
+<div id="response-message">
+
+</div>
+<ul id="productlist"
+    style="display:flex; flex-direction:column; gap: 20px; border: 1px solid black; max-width: 300px; padding: 20px">
+
+</ul>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+    const socket = io();
+    socket.on('list products', function (products) {
+        generateProductList(products)
+    });
+    socket.emit('list products', 'productos')
+
+    const generateProductList = (products) => {
+        const htmlList = document.getElementById("productlist")
+        htmlList.innerHTML = '';
+        products.forEach(product => {
+            const liElement = document.createElement('li');
+            liElement.setAttribute("id", product.id);
+            liElement.innerHTML =
+                `
+                    <div style="display:flex; flex-direction: column ;gap: 10px;">
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Nombre: </span> <span>${product.title}</span>
+                        </div>
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Descripcion: </span> <span>${product.description} </span>
+                        </div>
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Stock: </span> <span>${product.stock} </span>
+                        </div>
+                    </div>
+                    `
+            htmlList.appendChild(liElement)
+        })
+    }
+
+    const form = document.getElementById('create-product')
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault()
+        const inputs = document.querySelectorAll("#create-product input")
+        const values = []
+        inputs.forEach((element) => { values.push(element.value) })
+
+        const body = {
+            title: values[0],
+            description: values[1],
+            price: parseInt(values[2]),
+            code: values[3],
+            stock: parseInt(values[4]),
+            status: true,
+            category: values[5],
+            thumbnails: []
+        }
+
+        fetch('/api/products', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then((res) => res.text())
+            .then((res) => { document.getElementById('response-message').innerHTML = res })
+    })
+</script>

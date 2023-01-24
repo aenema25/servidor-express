@@ -4,12 +4,11 @@ const router = express.Router();
 
 /* GET products. */
 router.get('/products', function (req, res, next) {
-  res.send({
-    productos: ProductsClass.getProducts().slice(0, req.query.limit)
-  })
+  res.send(ProductsClass.getProducts().slice(0, req.query.limit))
 });
 /* POST product (create a product). */
 router.post('/products', function (req, res, next) {
+
   const addProduct = ProductsClass.addProducts(req.body)
   if (addProduct.error) {
     res.status(400).send(addProduct.mensaje)
@@ -30,7 +29,6 @@ router.put('/products/:id', function (req, res, next) {
 });
 /* GET products by id. */
 router.get('/products/:id', function (req, res, next) {
-  console.log(req.params.id)
   res.send({
     productos: ProductsClass.getProductById(req.params.id)
   })

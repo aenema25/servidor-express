@@ -1,0 +1,38 @@
+<h1>Servidor Express | CoderHouse</h1>
+<ul id="productlist" style="display:flex; flex-direction:column; gap: 20px">
+
+</ul>
+<script>
+
+    const getProducts = async () => {
+        const fetchProducts = await fetch("/api/products", { method: 'GET' })
+        const products = await fetchProducts.json()
+        if (products.length > 0) {
+            const htmlList = document.getElementById("productlist")
+            products.forEach(product => {
+                const liElement = document.createElement('li');
+                liElement.setAttribute("id", product.id);
+                liElement.innerHTML =
+                    `
+                    <div style="display:flex; flex-direction: column ;gap: 10px;">
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Nombre: </span> <span>${product.title}</span>
+                        </div>
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Descripcion: </span> <span>${product.description} </span>
+                        </div>
+                        <div style="display:flex ; align-item: center; gap: 5px;">
+                            <span>Stock: </span> <span>${product.stock} </span>
+                        </div>
+                    </div>
+                    `
+                htmlList.appendChild(liElement)
+            })
+        } else {
+            const htmlList = document.getElementById("productlist")
+            htmlList.innerText = "Sin productos"
+        }
+    }
+
+    getProducts()
+</script>

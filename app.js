@@ -3,14 +3,24 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const http = require('http');
+const handlebars = require('express-handlebars');
+const fs = require('fs')
 
 const productsRouter = require('./routes/products');
 
 const app = express();
 
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const ProductsClass = require('./utils/ProductManager');
+const io = new Server(server);
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
+app.set('view engine', 'handlebars');
+
+app.engine('handlebars', handlebars.engine());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -19,15 +29,33 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
 
-app.use('/', productsRouter);
+app.use('/api', productsRouter);
 
+
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+app.get('/realtimeproducts', (req, res) => {
+  res.render('realTimeProducts');
+});
+
+io.on('connection', (socket) => {
+  socket.on('list products', (msg) => {
+    io.emit('list products', ProductsClass.getProducts())
+  });
+
+  fs.watchFile('./utils/data.json', { persistent: true }, () => {
+    io.emit('list products', ProductsClass.getProducts())
+  })
+});
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -38,3 +66,9 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+module.exports = server
+
+module.exports = {
+  app: app,
+  server: server,
+};
