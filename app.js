@@ -1,3 +1,5 @@
+
+require('dotenv').config()
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -14,7 +16,18 @@ const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const ProductsClass = require('./utils/ProductManager');
+const { connected } = require('process');
+const database = require('./db/connect');
 const io = new Server(server);
+
+database.on('error', (error) => {
+    console.log(error)
+})
+
+database.once('connected', () => {
+    console.log('Database Connected');
+})
+
 
 // view engine setup
 app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
@@ -38,6 +51,14 @@ app.get('/', (req, res) => {
 
 app.get('/realtimeproducts', (req, res) => {
   res.render('realTimeProducts');
+});
+
+app.get('/products', (req, res) => {
+  res.render('products');
+});
+
+app.get('/cart', (req, res) => {
+  res.render('cart');
 });
 
 io.on('connection', (socket) => {

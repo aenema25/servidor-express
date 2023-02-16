@@ -1,10 +1,59 @@
 const express = require('express');
 const ProductsClass = require('../utils/ProductManager');
 const router = express.Router();
+const ProductModel = require('../models/productModel')
 
 /* GET products. */
-router.get('/products', function (req, res, next) {
-  res.send(ProductsClass.getProducts().slice(0, req.query.limit))
+router.get('/products', async function (req, res, next) {
+  const customLabel = {
+    totalDocs: false,
+    docs: "payload",
+    limit: false,
+    page: 'page',
+    nextPage: 'nextPage',
+    prevPage: 'prevPage',
+    totalPages: 'totalPages',
+    hasNextPage: 'hasNextPage',
+    hasPrevPage: 'hasPrevPage',
+    pagingCounter: false,
+    meta: false
+  }
+  const options = {
+    ...(req.query.limit && {
+      limit: req.query.limit
+    }),
+    ...(req.query.page && {
+      page: req.query.page
+    }),
+    ...(req.query.sort && {
+      sort: {
+        price: req.query.sort 
+      }
+    }),
+    customLabels: customLabel
+  }
+
+  const filters = {
+    ...(req.query.category && {
+      category: req.query.category
+    })
+  }
+
+  const products = await ProductModel.paginate(filters, options)
+  if (products) {
+    res.status(200).send({
+      status: "success",
+      ...products
+    })
+
+  } else {
+    res.status(400).send({
+      status: "error",
+      ...products
+    })
+
+  }
+
 });
 /* POST product (create a product). */
 router.post('/products', function (req, res, next) {
