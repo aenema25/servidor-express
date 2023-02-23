@@ -1,4 +1,20 @@
 <h1>Lista de productos | CoderHouse</h1>
+<div style="display:none;flex-direction:column" id="userinfo">
+    Datos de usuario
+    <div>
+        Nombre: <span id="user-fullname"></span>
+    </div>
+    <div>
+        Correo: <span id="user-email"></span>
+    </div>
+    <div style="display:none;" id="useradmin">
+        Felicidades ! Eres administrador
+    </div>
+    <div>
+        <button id="logout">Cerrar sesion</button>
+    </div>
+
+</div>
 <ul id="productlist" style="display:flex; flex-direction:column; gap: 20px">
 
 </ul>
@@ -38,4 +54,24 @@
     }
 
     getProducts()
+
+    const user = localStorage.getItem("user")
+    if (user) {
+        const formatedUser = JSON.parse(user)
+        console.log(formatedUser)
+        document.getElementById("userinfo").style.display = "flex"
+        document.getElementById("user-fullname").innerHTML = `${formatedUser.name} ${formatedUser.lastName}`
+        document.getElementById("user-email").innerHTML = `${formatedUser.email}`
+        if (formatedUser.rol === "admin") {
+            document.getElementById("useradmin").style.display = "flex"
+        }
+    }
+
+    document.getElementById("logout").addEventListener("click", (e) => {
+        e.preventDefault()
+        localStorage.removeItem("user")
+        setTimeout(() => {
+            document.location = "login"
+        }, 500)
+    })
 </script>

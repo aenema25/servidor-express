@@ -10,6 +10,7 @@ const handlebars = require('express-handlebars');
 const fs = require('fs')
 
 const productsRouter = require('./routes/products');
+const usersRouter = require('./routes/users');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
 
 app.use('/api', productsRouter);
+app.use('/user', usersRouter);
 
 
 app.get('/', (req, res) => {
@@ -59,6 +61,14 @@ app.get('/products', (req, res) => {
 
 app.get('/cart', (req, res) => {
   res.render('cart');
+});
+
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.get('/signup', (req, res) => {
+  res.render('signup');
 });
 
 io.on('connection', (socket) => {
