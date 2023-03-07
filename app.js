@@ -17,9 +17,13 @@ const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const ProductsClass = require('./utils/ProductManager');
-const { connected } = require('process');
 const database = require('./db/connect');
 const io = new Server(server);
+
+const initializePassport = require("./config/passport.config");
+const session = require('express-session');
+const passport = require('passport');
+
 
 database.on('error', (error) => {
     console.log(error)
@@ -35,7 +39,12 @@ app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 app.engine('handlebars', handlebars.engine());
+initializePassport()
 
+app.use(session({
+  secret: "CoderHouseSecret"
+}))
+app.use(passport.initialize())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
