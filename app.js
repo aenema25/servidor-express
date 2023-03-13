@@ -10,6 +10,7 @@ const handlebars = require('express-handlebars');
 const fs = require('fs')
 
 const productsRouter = require('./routes/products');
+const githubRouter = require('./routes/githubAuthorization');
 const usersRouter = require('./routes/users');
 
 const app = express();
@@ -41,9 +42,7 @@ app.set('view engine', 'handlebars');
 app.engine('handlebars', handlebars.engine());
 initializePassport()
 
-app.use(session({
-  secret: "CoderHouseSecret"
-}))
+
 app.use(passport.initialize())
 app.use(logger('dev'));
 app.use(express.json());
@@ -51,8 +50,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
+app.use(session({
+  secret: "CoderHouseSecret",
+  saveUninitialized: false
+}))
 
-app.use('/api', productsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/github', githubRouter);
 app.use('/user', usersRouter);
 
 
@@ -65,7 +69,8 @@ app.get('/realtimeproducts', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  res.render('products');
+  console.log(req.session.user)
+  res.render('products', {user: req.session.user});
 });
 
 app.get('/cart', (req, res) => {

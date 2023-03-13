@@ -4,13 +4,14 @@
     <div style="display: flex; justify-content: space-between">Correo: <input id="email" name='email' type="email" required /></div>
     <div style="display: flex; justify-content: space-between">Contraseña: <input id="password" name='password' type="password" required /></div>
     <button type="submit">Entrar</button>
+    <button><a href="/api/github">Entrar con GitHub</a></button>
 </form>
+
 <div id="response-message">
 
 </div>
 <script>
 
-  
     const form = document.getElementById('login')
 
     form.addEventListener("submit", (e) => {

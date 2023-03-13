@@ -55,7 +55,18 @@
 
     getProducts()
 
+    const githubUser = {
+        _id: "{{user._id}}" ?? '',
+        email: "{{user.email}}"?? '',
+        name: "{{user.name}}"?? '',
+        lastName: "{{user.lastName}}"?? '',
+        rol: "{{user.rol}}"?? '',
+    }
+    if (githubUser) {
+        localStorage.setItem("user", JSON.stringify(githubUser))
+    }
     const user = localStorage.getItem("user")
+
     if (user) {
         const formatedUser = JSON.parse(user)
         console.log(formatedUser)

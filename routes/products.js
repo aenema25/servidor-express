@@ -4,7 +4,7 @@ const router = express.Router();
 const ProductModel = require('../models/productModel')
 
 /* GET products. */
-router.get('/products', async function (req, res, next) {
+router.get('/', async function (req, res, next) {
   const customLabel = {
     totalDocs: false,
     docs: "payload",
@@ -56,7 +56,7 @@ router.get('/products', async function (req, res, next) {
 
 });
 /* POST product (create a product). */
-router.post('/products', function (req, res, next) {
+router.post('/', function (req, res, next) {
 
   const addProduct = ProductsClass.addProducts(req.body)
   if (addProduct.error) {
@@ -67,7 +67,7 @@ router.post('/products', function (req, res, next) {
 
 });
 /* PUT product (update a product). */
-router.put('/products/:id', function (req, res, next) {
+router.put('/:id', function (req, res, next) {
   const updateProduct = ProductsClass.updateProductById(req.params.id, req.body)
   if (updateProduct.error) {
     res.status(400).send(updateProduct.mensaje)
@@ -77,14 +77,14 @@ router.put('/products/:id', function (req, res, next) {
 
 });
 /* GET products by id. */
-router.get('/products/:id', function (req, res, next) {
+router.get('/:id', function (req, res, next) {
   res.send({
     productos: ProductsClass.getProductById(req.params.id)
   })
 });
 
 /* DELETE products by id. */
-router.delete('/products/:id', function (req, res, next) {
+router.delete('/:id', function (req, res, next) {
   const deleteProduct = ProductsClass.deleteProductById(req.params.id)
   if (deleteProduct.error) {
     res.status(400).send(deleteProduct.mensaje)
