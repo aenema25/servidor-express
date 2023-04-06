@@ -1,11 +1,8 @@
-const express = require('express');
-const UsersModel = require('../models/usersModel');
-const router = express.Router();
 const hashPassword = require("../utils/passwordHash")
 const verifyPassword = require("../utils/validatePassword")
+const UsersModel = require('../models/usersModel');
 
-/* Put products in cart. */
-router.post('/login', async function (req, res, next) {
+exports.login = async (req, res) => {
     const user = await UsersModel.findOne({ email: req.body.email })
     if (user) {
         verifyPassword(req.body.password, user.password).then(isValid => {
@@ -28,11 +25,9 @@ router.post('/login', async function (req, res, next) {
     } else {
         res.status(400).send({ message: "Usuario no encontrado" })
     }
+}
 
-});
-
-/* Put products qty in cart. */
-router.post('/signup', async function (req, res, next) {
+exports.signup = async (req, res) => {
     if (req.body.email && req.body.password && req.body.name && req.body.lastName) {
         hashPassword(req.body.password).then(async password => {
             const insertUser = await UsersModel.create({
@@ -50,9 +45,4 @@ router.post('/signup', async function (req, res, next) {
     } else {
         res.status(400).send({ message: "Uno o mas campos estan vacios, intente nuevamente", success: false })
     }
-});
-
-
-
-
-module.exports = router;
+}

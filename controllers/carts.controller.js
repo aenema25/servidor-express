@@ -1,9 +1,6 @@
-const express = require('express');
 const CartModel = require('../models/cartModel');
-const router = express.Router();
 
-/* Put products in cart. */
-router.put('/carts/:cid', async function (req, res, next) {
+exports.put_product = async (req, res) => {
     const cart = await CartModel.find({ id: req.params.cid })
     const filter = { id: req.params.cid }
     const update = { products: [...cart.products, req.body.product] }
@@ -19,10 +16,9 @@ router.put('/carts/:cid', async function (req, res, next) {
             message: "Ocurrio un error, intenta nuevamente"
         })
     }
-});
+}
 
-/* Put products qty in cart. */
-router.put('/carts/:cid/products/:pid', async function (req, res, next) {
+exports.put_product_qty = async (req, res) => {
     const cart = await CartModel.find({ id: req.params.cid })
     const updatedCart = cart.map((product) => {
         if (product.id === req.params.pid) {
@@ -44,10 +40,9 @@ router.put('/carts/:cid/products/:pid', async function (req, res, next) {
             message: "Ocurrio un error, intenta nuevamente"
         })
     }
-});
+}
 
-/* DELETE product in cart. */
-router.delete('/carts/:cid/products/:pid', async function (req, res, next) {
+exports.delete_product = async (req, res) => {
     const cart = await CartModel.find({ id: req.params.cid })
     const updatedCart = cart.map((product) => {
         if (product.id !== req.params.pid) {
@@ -68,10 +63,9 @@ router.delete('/carts/:cid/products/:pid', async function (req, res, next) {
             message: "Ocurrio un error, intenta nuevamente"
         })
     }
-});
+}
 
-/* DELETE whole cart. */
-router.delete('/carts/:cid/products/:pid', async function (req, res, next) {
+exports.delete_cart = async (req, res) => {
     const filter = { id: req.params.cid }
     const update = { products: [] }
     const cartUpdated = await CartModel.findOneAndUpdate(filter, update);
@@ -86,7 +80,4 @@ router.delete('/carts/:cid/products/:pid', async function (req, res, next) {
             message: "Ocurrio un error, intenta nuevamente"
         })
     }
-});
-
-
-module.exports = router;
+}

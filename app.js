@@ -1,4 +1,3 @@
-
 require('dotenv').config()
 const createError = require('http-errors');
 const express = require('express');
@@ -8,12 +7,11 @@ const logger = require('morgan');
 const http = require('http');
 const handlebars = require('express-handlebars');
 const fs = require('fs')
-
-const productsRouter = require('./routes/products');
-const githubRouter = require('./routes/githubAuthorization');
-const usersRouter = require('./routes/users');
-
 const app = express();
+
+const productsRouter = require('./routes/products.routes');
+const githubRouter = require('./routes/github.routes');
+const usersRouter = require('./routes/users.routes');
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -40,8 +38,8 @@ app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 app.engine('handlebars', handlebars.engine());
-initializePassport()
 
+initializePassport()
 
 app.use(passport.initialize())
 app.use(logger('dev'));
