@@ -24,5 +24,8 @@
     "passport-github2": "^0.1.12",
     "pug": "2.0.0-beta11",
     "socket.io": "^4.5.4"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0"
   }
 }

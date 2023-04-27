@@ -12,6 +12,7 @@ const app = express();
 const productsRouter = require('./routes/products.routes');
 const githubRouter = require('./routes/github.routes');
 const usersRouter = require('./routes/users.routes');
+const mocksRouter = require('./routes/mocks.routes');
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -56,6 +57,7 @@ app.use(session({
 app.use('/api/products', productsRouter);
 app.use('/api/github', githubRouter);
 app.use('/user', usersRouter);
+app.use('/api/mocks', mocksRouter);
 
 
 app.get('/', (req, res) => {
