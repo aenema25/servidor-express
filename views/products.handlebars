@@ -69,7 +69,6 @@
 
     if (user) {
         const formatedUser = JSON.parse(user)
-        console.log(formatedUser)
         document.getElementById("userinfo").style.display = "flex"
         document.getElementById("user-fullname").innerHTML = `${formatedUser.name} ${formatedUser.lastName}`
         document.getElementById("user-email").innerHTML = `${formatedUser.email}`

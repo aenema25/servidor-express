@@ -15,4 +15,4 @@ const cartSchema = new mongoose.Schema({
 
 cartSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('products', cartSchema)
+module.exports = mongoose.model('cart', cartSchema)

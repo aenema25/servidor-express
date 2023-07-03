@@ -1,48 +1,56 @@
 const hashPassword = require("../utils/passwordHash")
 const verifyPassword = require("../utils/validatePassword")
-const UsersModel = require('../models/usersModel');
+const { userService } = require("../services");
+const { UserInsertDto, UserParsedDTO } = require("../dto/user");
+const { generateToken } = require("../utils/jwt");
 
 exports.login = async (req, res) => {
-    const user = await UsersModel.findOne({ email: req.body.email })
-    if (user) {
-        verifyPassword(req.body.password, user.password).then(isValid => {
-            if (isValid) {
-                delete user.password
-                res.status(200).send({
-                    message: "Inicio de sesion exitoso",
-                    user: {
-                        _id: user._id,
-                        email: user.email,
-                        name: user.name,
-                        lastName: user.lastName,
-                        rol: user.rol
-                    }
-                })
-            } else {
-                res.status(400).send({ message: "Contraseña incorrecta, intente nuevamente" })
-            }
-        })
-    } else {
-        res.status(400).send({ message: "Usuario no encontrado" })
+    try {
+        const user = await userService.get(req.body.email)
+        if (user) {
+            verifyPassword(req.body.password, user.password).then(isValid => {
+                if (isValid) {
+                    const userData = new UserParsedDTO(user)
+                    const userToken = generateToken({ email: userData.email, role: userData.rol })
+                    res
+                        .status(200)
+                        .cookie('token', userToken, { maxAge: 30000, httpOnly: true })
+                        .send({
+                            message: "Inicio de sesion exitoso",
+                            user: { userData }
+                        })
+                } else {
+                    res.status(400).send({ message: "Contraseña incorrecta, intente nuevamente" })
+                }
+            })
+        } else {
+            res.status(400).send({ message: "Usuario no encontrado" })
+        }
+    } catch (e) {
+        console.log(e)
     }
 }
 
 exports.signup = async (req, res) => {
     if (req.body.email && req.body.password && req.body.name && req.body.lastName) {
         hashPassword(req.body.password).then(async password => {
-            const insertUser = await UsersModel.create({
-                email: req.body.email,
-                password: password,
-                name: req.body.name,
-                lastName: req.body.lastName,
-            })
-            if (insertUser) {
-                res.status(200).send({ message: "Usuario creado con exito, en breve seras redirigido a la pagina de inicio de sesion", success: true })
-            } else {
-                res.status(400).send({ message: "Ocurrio un error inesperado, intente nuevamente", success: false })
+            const parsedUser = new UserInsertDto(req.body, password)
+            try {
+                const insertUser = await userService.create(parsedUser)
+                if (insertUser) {
+                    res.status(200).send({ message: "Usuario creado con exito, en breve seras redirigido a la pagina de inicio de sesion", success: true })
+                } else {
+                    res.status(400).send({ message: "Ocurrio un error inesperado, intente nuevamente", success: false })
+                }
+            } catch (e) {
+                console.log(e)
             }
         })
     } else {
         res.status(400).send({ message: "Uno o mas campos estan vacios, intente nuevamente", success: false })
     }
+}
+
+exports.current = (req, res) => {
+    res.status(200).send(req.user)
 }

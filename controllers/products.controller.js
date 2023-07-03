@@ -1,5 +1,5 @@
-const ProductModel = require('../models/productModel')
-const ProductsClass = require('../utils/ProductManager');
+const { productService } = require('../services');
+const { ProductInsertDTO, ProductUpdateDTO } = require('../dto/product')
 
 exports.get_products = async (req, res) => {
     const customLabel = {
@@ -29,58 +29,152 @@ exports.get_products = async (req, res) => {
         }),
         customLabels: customLabel
     }
-
     const filters = {
         ...(req.query.category && {
             category: req.query.category
         })
     }
-
-    const products = await ProductModel.paginate(filters, options)
-    if (products) {
-        res.status(200).send({
-            status: "success",
-            ...products
+    try {
+        const products = await productService.getAll(filters, options)
+        if (products) {
+            res.status(200).send({
+                status: "success",
+                ...products
+            })
+        } else {
+            res.status(400).send({
+                status: "error",
+                ...products
+            })
+        }
+    } catch (e) {
+        res.status(400).send({
+            status: "error",
+            message: "Ocurrio un error en el servidor",
+            error: e
         })
+    }
+}
+
+exports.get_product_by_id = async (req, res) => {
+    if (req.params.id) {
+        try {
+            const product = await productService.getOne(req.params.id)
+            if (product) {
+                res.status(200).send({
+                    status: "success",
+                    product: product
+                })
+            } else {
+                res.status(400).send({
+                    status: "error",
+                    message: "Producto no encontrado"
+                })
+            }
+        } catch (e) {
+            res.status(400).send({
+                status: "error",
+                message: "Ocurrio un error en el servidor",
+                error: e
+            })
+        }
+    } else {
+        res.status(400).send({
+            status: "error",
+            message: "El campo 'id' viene vacio"
+        })
+    }
+}
+
+exports.create_product = async (req, res) => {
+    if (req.body) {
+        try {
+            const productParsed = new ProductInsertDTO(req.body)
+            const createdProduct = await productService.create(productParsed)
+            if (createdProduct) {
+                res.status(200).send({
+                    status: "success",
+                    product: createdProduct
+                })
+            } else {
+                res.status(400).send({
+                    status: "error",
+                    message: "No se pudo crear el producto"
+                })
+            }
+        } catch (e) {
+            res.status(400).send({
+                status: "error",
+                message: "Ocurrio un error en el servidor",
+                error: e
+            })
+        }
+    } else {
+        res.status(400).send({
+            status: "error",
+            message: "Datos faltantes",
+        })
+    }
+}
+
+exports.update_product = async (req, res) => {
+    if (Object.keys(req.body).length && req.params.id) {
+        try {
+            const updatedData = new ProductUpdateDTO(req.body)
+            const updatedProduct = await productService.update(req.params.id, updatedData)
+            if (updatedProduct) {
+                res.status(200).send({
+                    status: "success",
+                    product: updatedProduct
+                })
+            } else {
+                res.status(400).send({
+                    status: "error",
+                    message: "Producto no encontrado"
+                })
+            }
+        } catch (e) {
+            res.status(400).send({
+                status: "error",
+                message: "Ocurrio un error en el servidor",
+                error: e
+            })
+        }
 
     } else {
         res.status(400).send({
             status: "error",
-            ...products
+            message: "Datos faltantes",
         })
-
     }
 }
 
-exports.create_product_local = (req, res) => {
-    const addProduct = ProductsClass.addProducts(req.body)
-    if (addProduct.error) {
-        res.status(400).send(addProduct.mensaje)
-    } else {
-        res.status(200).send(addProduct.mensaje)
-    }
-}
-
-exports.update_product_local = (req, res) => {
-    const updateProduct = ProductsClass.updateProductById(req.params.id, req.body)
-    if (updateProduct.error) {
-        res.status(400).send(updateProduct.mensaje)
-    } else {
-        res.status(200).send(updateProduct.mensaje)
-    }
-}
-
-exports.get_product_by_id_local = (req, res) => {
-    res.send({
-        productos: ProductsClass.getProductById(req.params.id)
-    })
-}
-
-exports.delete_product_local = (req, res) => {
-    const deleteProduct = ProductsClass.deleteProductById(req.params.id)
-    if (deleteProduct.error) {
-        res.status(400).send(deleteProduct.mensaje)
-    } else {
-        res.status(200).send(deleteProduct.mensaje)
+exports.delete_product = async (req, res) => {
+    if(req.params.id){
+        try {
+            const deletedProduct = await productService.delete(req.params.id)
+            if (deletedProduct) {
+                res.status(200).send({
+                    status: "success",
+                    product: deletedProduct
+                })
+            } else {
+                res.status(400).send({
+                    status: "error",
+                    message: "Producto no encontrado"
+                })
+            }
+        } catch (e) {
+            res.status(400).send({
+                status: "error",
+                message: "'ID' no valido, contacta al administrador si crees que es un error",
+                error: e
+            })
+        }
+    }else {
+        res.status(400).send({
+            status: "error",
+            message: "Datos faltantes",
+        })
     }
 }

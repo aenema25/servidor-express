@@ -34,11 +34,11 @@ database.once('connected', () => {
 })
 
 
-// view engine setup
-app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
-app.set('view engine', 'handlebars');
+// // view engine setup
+// app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
+// app.set('view engine', 'handlebars');
 
-app.engine('handlebars', handlebars.engine());
+// app.engine('handlebars', handlebars.engine());
 
 initializePassport()
 
@@ -58,32 +58,6 @@ app.use('/api/products', productsRouter);
 app.use('/api/github', githubRouter);
 app.use('/user', usersRouter);
 app.use('/api/mocks', mocksRouter);
-
-
-app.get('/', (req, res) => {
-  res.render('home');
-});
-
-app.get('/realtimeproducts', (req, res) => {
-  res.render('realTimeProducts');
-});
-
-app.get('/products', (req, res) => {
-  console.log(req.session.user)
-  res.render('products', {user: req.session.user});
-});
-
-app.get('/cart', (req, res) => {
-  res.render('cart');
-});
-
-app.get('/login', (req, res) => {
-  res.render('login');
-});
-
-app.get('/signup', (req, res) => {
-  res.render('signup');
-});
 
 io.on('connection', (socket) => {
   socket.on('list products', (msg) => {

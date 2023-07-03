@@ -1,27 +1,27 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const usersSchema = new mongoose.Schema({
-    password: {
-        required: true,
-        type: String,
-    },
+    first_name: String,
+    last_name: String,
     email: {
         required: true,
         type: String,
     },
-    name:{
+    age: Number,
+    password: {
         required: true,
-        type:String
+        type: String,
     },
-    lastName: {
-        required: true,
-        type: String
+    cart: {
+        type: ObjectId,
+        ref: 'cart'
     },
     rol: {
         required: false,
         type: String,
-        default: "usuario"
+        default: "user"
     }
 })
 

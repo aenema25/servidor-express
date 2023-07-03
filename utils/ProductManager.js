@@ -11,7 +11,6 @@ class ProductManager {
         if (fileExist) {
             const productsFromFile = fs.readFileSync(this.path)
             this.products = JSON.parse(productsFromFile)
-            console.log("El archivo ya existia")
         } else {
             fs.writeFileSync(this.path, '[]')
         }
