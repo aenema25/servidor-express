@@ -1,7 +1,13 @@
 # servidor-express
 
-Crear un archivo .env con el siguiente contenido
+Live backend URL
 
 ```
-ATLAS_URI= mongodb+srv://coderhouseproject:uhiQ8KbXszL7Lrd6@cluster0.e696d9b.mongodb.net/coderhouse?retryWrites=true&w=majority
+https://servidor-express-production.up.railway.app/
+```
+
+Live frontend URL
+
+```
+https://nextjs-production-bd83.up.railway.app/
 ```
