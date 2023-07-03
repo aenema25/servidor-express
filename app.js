@@ -8,6 +8,7 @@ const http = require('http');
 const handlebars = require('express-handlebars');
 const fs = require('fs')
 const app = express();
+const cors = require('cors')
 
 const productsRouter = require('./routes/products.routes');
 const githubRouter = require('./routes/github.routes');
@@ -26,11 +27,11 @@ const passport = require('passport');
 
 
 database.on('error', (error) => {
-    console.log(error)
+  console.log(error)
 })
 
 database.once('connected', () => {
-    console.log('Database Connected');
+  console.log('Database Connected');
 })
 
 
@@ -52,6 +53,9 @@ app.use(express.json())
 app.use(session({
   secret: "CoderHouseSecret",
   saveUninitialized: false
+}))
+app.use(cors({
+  origin: '*'
 }))
 
 app.use('/api/products', productsRouter);
