@@ -31,6 +31,18 @@ exports.login = async (req, res) => {
     }
 }
 
+exports.github_callback = async (req, res) => {
+    const userData = new UserParsedDTO(req.user)
+    const userToken = generateToken({ email: userData.email, role: userData.rol })
+    res
+        .status(200)
+        .cookie('token', userToken, { maxAge: 30000, httpOnly: true })
+        .send({
+            message: "Inicio de sesion exitoso",
+            user: { userData }
+        })
+}
+
 exports.signup = async (req, res) => {
     if (req.body.email && req.body.password && req.body.name && req.body.lastName) {
         hashPassword(req.body.password).then(async password => {

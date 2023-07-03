@@ -53,10 +53,11 @@ const initializePassport = () => {
             const user = await UsersModel.findOne({ email: profile.emails[0].value })
             if (!user) {
                 const createNewUser = {
-                    password: profile._json.node_id,
+                    first_name: profile._json.name,
+                    last_name: '',
                     email: profile.emails[0].value,
-                    name: profile._json.name,
-                    lastName: ' '
+                    age: '',
+                    password: profile._json.node_id
                 }
                 const newUser = await UsersModel.create(createNewUser)
                 done(null, newUser)
@@ -80,7 +81,7 @@ const initializePassport = () => {
             async (req, username, password, done) => {
                 const { first_name, last_name, age } = req.body;
                 try {
-                    const userExist = await UsersModel.findOne({ email: username });
+                    const userExist = await userService.get(username);
                     if (userExist) {
                         done('register error', false, {
                             message: 'el usario existe en la ba',

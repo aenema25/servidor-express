@@ -55,7 +55,8 @@ app.use(session({
   saveUninitialized: false
 }))
 app.use(cors({
-  origin: '*'
+  origin: '*',
+  credentials: true
 }))
 
 app.use('/api/products', productsRouter);
