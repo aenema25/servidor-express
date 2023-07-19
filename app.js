@@ -5,10 +5,36 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const http = require('http');
-const handlebars = require('express-handlebars');
 const fs = require('fs')
 const app = express();
 const cors = require('cors')
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require("swagger-jsdoc");
+
+const options = {
+  definition: {
+    openapi: "3.1.0",
+    info: {
+      title: "API para proyecto backend de CoderHouse",
+      version: "0.1.0",
+      description:
+        "API para gestion de un ecommerce ficcticio para el proyecto de backend de CoderHouse",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const specs = swaggerJsdoc(options);
+
 
 const productsRouter = require('./routes/products.routes');
 const githubRouter = require('./routes/github.routes');
@@ -63,6 +89,8 @@ app.use('/api/products', productsRouter);
 app.use('/api/github', githubRouter);
 app.use('/user', usersRouter);
 app.use('/api/mocks', mocksRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 io.on('connection', (socket) => {
   socket.on('list products', (msg) => {
