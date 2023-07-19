@@ -3,17 +3,13 @@ const router = express.Router();
 
 const carts_controller = require("../controllers/carts.controller")
 
-/* Put products in cart. */
-router.put('/carts/:cid', carts_controller.put_product);
-
-/* Put products qty in cart. */
-router.put('/carts/:cid/products/:pid', carts_controller.put_product_qty);
-
-/* DELETE product in cart. */
-router.delete('/carts/:cid/products/:pid', carts_controller.delete_product);
+/* Create or modify cart product. */
+router.put('/carts/:cid', carts_controller.modify_or_create_cart);
 
 /* DELETE whole cart. */
-router.delete('/carts/:cid/products/:pid', carts_controller.delete_cart);
+router.delete('/carts/:cid', carts_controller.delete_cart); 
 
+/* POST Finish purchase */
+router.post('/:cid/purchase', carts_controller.finish_purchase)
 
 module.exports = router;

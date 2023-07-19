@@ -1,78 +1,49 @@
 const CartModel = require('../models/cartModel');
+const { cartService } = require('../services');
 
-exports.put_product = async (req, res) => {
-    const cart = await CartModel.find({ id: req.params.cid })
-    const filter = { id: req.params.cid }
-    const update = { products: [...cart.products, req.body.product] }
-    const cartUpdated = await CartModel.findOneAndUpdate(filter, update);
-    if (cartUpdated) {
-        res.status(200).send({
-            status: "success",
-            message: "Producto(s) agregado(s) con exito al carrito"
-        })
-    } else {
-        res.status(400).send({
-            status: "error",
-            message: "Ocurrio un error, intenta nuevamente"
-        })
-    }
-}
-
-exports.put_product_qty = async (req, res) => {
-    const cart = await CartModel.find({ id: req.params.cid })
-    const updatedCart = cart.map((product) => {
-        if (product.id === req.params.pid) {
-            product.qty = product.qty + req.body.qty
+exports.modify_or_create_cart = async (req, res) => {
+    const cart = await cartService.get(req.params.cartID)
+    if (cart) {
+        const update = { products: [...cart.products, req.body.productList] }
+        const cartUpdated = await cartService.update(req.params.cartID, update)
+        if (cartUpdated) {
+            res.status(200).send({
+                status: "success",
+                message: "Carro de compras actualizado con exito",
+                cart: cart
+            })
+        } else {
+            res.status(400).send({
+                status: "error",
+                message: "Ocurrio un error, intenta nuevamente",
+                cart: ''
+            })
         }
-        return product
-    })
-    const filter = { id: req.params.cid }
-    const update = { products: updatedCart }
-    const cartUpdated = await CartModel.findOneAndUpdate(filter, update);
-    if (cartUpdated) {
-        res.status(200).send({
-            status: "success",
-            message: "Cantidad actualizada con exito"
-        })
     } else {
-        res.status(400).send({
-            status: "error",
-            message: "Ocurrio un error, intenta nuevamente"
-        })
+        const newCart = await cartService.create(req.body.productList, req.body.userID)
+        if (newCart) {
+            res.status(200).send({
+                status: "success",
+                message: "Carro de compras actualizado con exito",
+                cart: newCart
+            })
+        } else {
+            res.status(400).send({
+                status: "error",
+                message: "Ocurrio un error, intenta nuevamente",
+                cart: ''
+            })
+        }
     }
 }
 
-exports.delete_product = async (req, res) => {
-    const cart = await CartModel.find({ id: req.params.cid })
-    const updatedCart = cart.map((product) => {
-        if (product.id !== req.params.pid) {
-            return product
-        }
-    })
-    const filter = { id: req.params.cid }
-    const update = { products: updatedCart }
-    const cartUpdated = await CartModel.findOneAndUpdate(filter, update);
-    if (cartUpdated) {
-        res.status(200).send({
-            status: "success",
-            message: "Producto eliminado del carrito exitosamente"
-        })
-    } else {
-        res.status(400).send({
-            status: "error",
-            message: "Ocurrio un error, intenta nuevamente"
-        })
-    }
-}
 
 exports.delete_cart = async (req, res) => {
-    const filter = { id: req.params.cid }
-    const update = { products: [] }
-    const cartUpdated = await CartModel.findOneAndUpdate(filter, update);
-    if (cartUpdated) {
+    const deleteCart = await cartService.delete(req.params.cartID)
+    if (deleteCart) {
         res.status(200).send({
             status: "success",
-            message: "Carrito vaciado con exito"
+            message: "Carrito eliminado con exito"
         })
     } else {
         res.status(400).send({
@@ -80,4 +51,8 @@ exports.delete_cart = async (req, res) => {
             message: "Ocurrio un error, intenta nuevamente"
         })
     }
+}
+
+exports.finish_purchase = async (req, res) => {
+
 }

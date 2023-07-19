@@ -44,7 +44,7 @@ exports.github_callback = async (req, res) => {
 }
 
 exports.signup = async (req, res) => {
-    if (req.body.email && req.body.password && req.body.name && req.body.lastName) {
+    if (req.body.email && req.body.password && req.body.first_name && req.body.last_name) {
         hashPassword(req.body.password).then(async password => {
             const parsedUser = new UserInsertDto(req.body, password)
             try {
