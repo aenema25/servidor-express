@@ -2,10 +2,10 @@ class CartService {
     constructor(manager) {
         this.manager = manager
     }
-    get = () => this.manager.get
-    create = () => this.manager.create
-    update = () => this.manager.update
-    delete = () => this.manager.delete
+    get = (id) => this.manager.get(id)
+    create = (productList, userId) => this.manager.create(productList, userId)
+    update = (cartdID, updatedData) => this.manager.update(cartdID, updatedData)
+    delete = (cartID) => this.manager.delete(cartID)
 }
 
-module.exports=  CartService
+module.exports = CartService

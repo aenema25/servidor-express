@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2')
 
 const cartSchema = new mongoose.Schema({
     id: {
@@ -10,9 +9,12 @@ const cartSchema = new mongoose.Schema({
         required: false,
         type: Array,
         default: []
+    },
+    userId: {
+        required: false,
+        type: String,
+        default: ''
     }
 })
-
-cartSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('cart', cartSchema)
