@@ -66,3 +66,11 @@ exports.signup = async (req, res) => {
 exports.current = (req, res) => {
     res.status(200).send(req.user)
 }
+
+exports.get_all_users = (req, res) => {
+
+}
+
+exports.delete_inactive_users = (req,res)=>{
+    
+}

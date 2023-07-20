@@ -15,5 +15,9 @@ router.get('/current', passport.authenticate('jwt', { session: false }), users_c
 router.get('/github', passport.authenticate('github', { scope: ["user:email"] }), async (req, res) => { })
 
 router.get('/githubcallback', passport.authenticate('github'), users_controller.github_callback)
+/* GET all users */
+router.get('/', users_controller.get_all_users)
+/* DELETE all users that are inactive more than 2 days */
+router.delete('/', users_controller.delete_inactive_users)
 
 module.exports = router;
