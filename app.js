@@ -3,13 +3,14 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const http = require('http');
 const fs = require('fs')
 const app = express();
 const cors = require('cors')
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require("swagger-jsdoc");
+
+const morganMiddleware = require("./middleware/morgan.middleware");
 
 const options = {
   definition: {
@@ -40,6 +41,7 @@ const productsRouter = require('./routes/products.routes');
 const githubRouter = require('./routes/github.routes');
 const usersRouter = require('./routes/users.routes');
 const mocksRouter = require('./routes/mocks.routes');
+const cartsRouter = require('./routes/carts.routes');
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -60,17 +62,11 @@ database.once('connected', () => {
   console.log('Database Connected');
 })
 
-
-// // view engine setup
-// app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
-// app.set('view engine', 'handlebars');
-
-// app.engine('handlebars', handlebars.engine());
-
 initializePassport()
 
 app.use(passport.initialize())
-app.use(logger('dev'));
+
+app.use(morganMiddleware)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -89,8 +85,11 @@ app.use('/api/products', productsRouter);
 app.use('/api/github', githubRouter);
 app.use('/user', usersRouter);
 app.use('/api/mocks', mocksRouter);
+app.use('/api/cart', cartsRouter)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+
 
 io.on('connection', (socket) => {
   socket.on('list products', (msg) => {
