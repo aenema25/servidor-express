@@ -21,6 +21,13 @@ const usersSchema = new mongoose.Schema({
         required: false,
         type: String,
         default: "user"
+    },
+    cartID: {
+        type: String
+    },
+    lastConnection: {
+        type: Date,
+        default: new Date()
     }
 })
 

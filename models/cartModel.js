@@ -10,10 +10,9 @@ const cartSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    userId: {
-        required: false,
-        type: String,
-        default: ''
+    clientName: { 
+        required: true,
+        type: String
     }
 })
 
