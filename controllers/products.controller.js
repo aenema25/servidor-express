@@ -87,94 +87,116 @@ exports.get_product_by_id = async (req, res) => {
 }
 
 exports.create_product = async (req, res) => {
-    if (req.body) {
-        try {
-            const productParsed = new ProductInsertDTO(req.body)
-            const createdProduct = await productService.create(productParsed)
-            if (createdProduct) {
-                res.status(200).send({
-                    status: "success",
-                    product: createdProduct
-                })
-            } else {
+    const isAdmin = req.user.role === 'admin'
+    if (isAdmin) {
+        if (req.body) {
+            try {
+                const productParsed = new ProductInsertDTO(req.body)
+                const createdProduct = await productService.create(productParsed)
+                if (createdProduct) {
+                    res.status(200).send({
+                        status: "success",
+                        product: createdProduct
+                    })
+                } else {
+                    res.status(400).send({
+                        status: "error",
+                        message: "No se pudo crear el producto"
+                    })
+                }
+            } catch (e) {
                 res.status(400).send({
                     status: "error",
-                    message: "No se pudo crear el producto"
+                    message: "Ocurrio un error en el servidor",
+                    error: e
                 })
             }
-        } catch (e) {
+        } else {
             res.status(400).send({
                 status: "error",
-                message: "Ocurrio un error en el servidor",
-                error: e
+                message: "Datos faltantes",
             })
         }
     } else {
-        res.status(400).send({
-            status: "error",
-            message: "Datos faltantes",
+        res.status(401).send({
+            error: "unauthorized",
         })
     }
+
 }
 
 exports.update_product = async (req, res) => {
-    if (Object.keys(req.body).length && req.params.id) {
-        try {
-            const updatedData = new ProductUpdateDTO(req.body)
-            const updatedProduct = await productService.update(req.params.id, updatedData)
-            if (updatedProduct) {
-                res.status(200).send({
-                    status: "success",
-                    product: updatedProduct
-                })
-            } else {
+    const isAdmin = req.user.role === 'admin'
+    if (isAdmin) {
+        if (Object.keys(req.body).length && req.params.id) {
+            try {
+                const updatedData = new ProductUpdateDTO(req.body)
+                const updatedProduct = await productService.update(req.params.id, updatedData)
+                if (updatedProduct) {
+                    res.status(200).send({
+                        status: "success",
+                        product: updatedProduct
+                    })
+                } else {
+                    res.status(400).send({
+                        status: "error",
+                        message: "Producto no encontrado"
+                    })
+                }
+            } catch (e) {
                 res.status(400).send({
                     status: "error",
-                    message: "Producto no encontrado"
+                    message: "Ocurrio un error en el servidor",
+                    error: e
                 })
             }
-        } catch (e) {
+
+        } else {
             res.status(400).send({
                 status: "error",
-                message: "Ocurrio un error en el servidor",
-                error: e
+                message: "Datos faltantes",
             })
         }
-
     } else {
-        res.status(400).send({
-            status: "error",
-            message: "Datos faltantes",
+        res.status(401).send({
+            error: "unauthorized",
         })
     }
 }
 
 exports.delete_product = async (req, res) => {
-    if(req.params.id){
-        try {
-            const deletedProduct = await productService.delete(req.params.id)
-            if (deletedProduct) {
-                res.status(200).send({
-                    status: "success",
-                    product: deletedProduct
-                })
-            } else {
+    const isAdmin = req.user.role === 'admin'
+    if (isAdmin) {
+        if (req.params.id) {
+            try {
+                const deletedProduct = await productService.delete(req.params.id)
+                if (deletedProduct) {
+                    res.status(200).send({
+                        status: "success",
+                        product: deletedProduct
+                    })
+                } else {
+                    res.status(400).send({
+                        status: "error",
+                        message: "Producto no encontrado"
+                    })
+                }
+            } catch (e) {
                 res.status(400).send({
                     status: "error",
-                    message: "Producto no encontrado"
+                    message: "'ID' no valido, contacta al administrador si crees que es un error",
+                    error: e
                 })
             }
-        } catch (e) {
+        } else {
             res.status(400).send({
                 status: "error",
-                message: "'ID' no valido, contacta al administrador si crees que es un error",
-                error: e
+                message: "Datos faltantes",
             })
         }
-    }else {
-        res.status(400).send({
-            status: "error",
-            message: "Datos faltantes",
+    } else {
+        res.status(401).send({
+            error: "unauthorized",
         })
     }
 }
