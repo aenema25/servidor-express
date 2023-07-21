@@ -16,6 +16,10 @@ const ticketsSchema = new mongoose.Schema({
     purchaser: {
         required: true,
         type: String
+    },
+    detail: {
+        required: true,
+        type: Array
     }
 })
 
