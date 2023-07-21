@@ -3,7 +3,7 @@ const cartModel = require("../../models/cartModel")
 
 class CartManager {
     get = (id) => cartModel.findOne({ id: id })
-    create = (productList, userId) => cartModel.create(CreateCartDTO(productList, userId))
+    create = (productList, cartID, clientName) => cartModel.create(new CreateCartDTO(productList, cartID, clientName))
     update = (cartdID, updatedData) => cartModel.updateOne({ id: cartdID }, updatedData)
     delete = (cartID) => cartModel.deleteOne({ id: cartID })
 }

@@ -1,9 +1,8 @@
-const crypto = require("crypto");
-
 class CreateCartDTO {
-    constructor(productList,userId) {
-        this.id = `CART-${userId ?? crypto.randomBytes(3*4).toString('base64')}`
+    constructor(productList, cartID, clientName) {
+        this.id = cartID
         this.products = productList
+        this.clientName = clientName
     }
 }
 
