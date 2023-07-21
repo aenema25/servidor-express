@@ -74,10 +74,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
 app.use(session({
   secret: "CoderHouseSecret",
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: true,
+    sameSite: "none"
+  }
 }))
 app.use(cors({
-  origin: '*',
+  origin: process.env.ORIGIN_URL,
   credentials: true
 }))
 
