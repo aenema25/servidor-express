@@ -4,7 +4,7 @@ const { UserParsedDTO } = require('../dto/user');
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-const generateToken = (payload) => jwt.sign(payload, PRIVATE_KEY);
+const generateToken = (payload) => jwt.sign(payload, PRIVATE_KEY, {expiresIn: "24h"});
 
 const getPayload = (req, res, next) => {
     const headerAuth = req.headers.authorization;
