@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 class UserInsertDto {
     constructor(user, password) {
         this.first_name = user.first_name
@@ -5,6 +7,7 @@ class UserInsertDto {
         this.email = user.email
         this.age = user.age ?? ''
         this.password = password
+        this.cartID = `CART-${crypto.randomBytes(3 * 4).toString('base64')}`
     }
 }
 
@@ -15,6 +18,7 @@ class UserParsedDTO {
         this.fullName = `${user.first_name} ${user.last_name}`
         this.rol = user.rol
         this.age = user.age
+        this.cartID = user.cartID
     }
 }
 

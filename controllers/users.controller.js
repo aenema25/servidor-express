@@ -14,7 +14,7 @@ exports.login = async (req, res) => {
                     const userToken = generateToken({ email: userData.email, role: userData.rol })
                     res
                         .status(200)
-                        .cookie('token', userToken, { maxAge: 30000, httpOnly: true })
+                        .cookie('token', userToken, { maxAge: 30000000, httpOnly: true })
                         .send({
                             message: "Inicio de sesion exitoso",
                             user: { userData }
@@ -67,10 +67,14 @@ exports.current = (req, res) => {
     res.status(200).send(req.user)
 }
 
-exports.get_all_users = (req, res) => {
-
+exports.get_all_users = async (req, res) => {
+    const users = await userService.getAll()
+    res.status(200).send({
+        message: "Usuarios",
+        users: { users }
+    })
 }
 
-exports.delete_inactive_users = (req,res)=>{
-    
+exports.delete_inactive_users = (req, res) => {
+
 }
